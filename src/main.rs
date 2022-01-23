@@ -1,5 +1,5 @@
-pub mod Vec3;
 pub mod ray;
+pub mod vec3;
 
 fn main() {
     //Image
@@ -12,17 +12,17 @@ fn main() {
     let viewport_width = aspect_ratio * viewport_height;
     let focal_length = 1.0;
 
-    let origin = Vec3::Point3 {
+    let origin = vec3::Point3 {
         x: 0.0,
         y: 0.0,
         z: 0.0,
     };
-    let horizontal = Vec3::Vec3 {
+    let horizontal = vec3::Vec3 {
         x: viewport_width,
         y: 0.0,
         z: 0.0,
     };
-    let vertical = Vec3::Vec3 {
+    let vertical = vec3::Vec3 {
         x: 0.0,
         y: viewport_height,
         z: 0.0,
@@ -31,7 +31,7 @@ fn main() {
     let lower_left_corner = origin
         - horizontal / 2.0
         - vertical / 2.0
-        - Vec3::Vec3 {
+        - vec3::Vec3 {
             x: 0.0,
             y: 0.0,
             z: focal_length,
@@ -54,7 +54,7 @@ fn main() {
 
             let color = ray::Ray::ray_color(&r);
 
-            Vec3::write_as_color(color);
+            vec3::write_as_color(color);
         }
     }
     eprintln!("\nDone.\n");
