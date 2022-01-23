@@ -1,15 +1,14 @@
-use std::ops{Add, AddAssign};
+use core::fmt::{Display, Formatter, Result};
+use core::ops::{Add, AddAssign, Mul, MulAssign};
 
-
-
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Vec3 {
-    x: f64,
-    y: f64,
-    z: f64,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
-pub impl Vec3 {
+impl Vec3 {
     fn x(&self) -> f64 {
         return self.x;
     }
@@ -23,39 +22,33 @@ pub impl Vec3 {
     }
 
     fn length(&self) -> f64 {
-        return (self.x*self.x + self.y*self.y + self.z*self.z).sqrt();
+        return (self.x * self.x + self.y * self.y + self.z * self.z).sqrt();
     }
-
 }
 
 impl Add for Vec3 {
     type Output = Self;
 
-    fn add(&self, _rhs: Self) -> Self {
+    fn add(self, _rhs: Self) -> Self {
         Self {
             x: self.x + _rhs.x,
             y: self.y + _rhs.y,
             z: self.z + _rhs.z,
         }
-    } 
+    }
 }
 
-
-
-
 impl AddAssign for Vec3 {
-    type Output = Self;
-
-    fn add_assign(_: &mut &self, _rhs: Self) -> Self {
+    fn add_assign(&mut self, _rhs: Self) {
         *self = Self {
             x: self.x + _rhs.x,
             y: self.y + _rhs.y,
             z: self.z + _rhs.z,
         };
-    } 
+    }
 }
 
-impl ops::Mul for Vec3 {
+impl Mul for Vec3 {
     type Output = Self;
 
     fn mul(self, _rhs: Self) -> Self {
@@ -67,7 +60,7 @@ impl ops::Mul for Vec3 {
     }
 }
 
-impl ops::Mul<f64> for Vec3 {
+impl Mul<f64> for Vec3 {
     type Output = Self;
 
     fn mul(self, _rhs: f64) -> Self {
@@ -76,22 +69,21 @@ impl ops::Mul<f64> for Vec3 {
             y: self.y * _rhs,
             z: self.z * _rhs,
         }
-    } 
-}
-
-impl ops::Mul<f64> for Vec3 {
-    type Output = Self;
-
-    fn mul(self, _lhs: f64) -> Self {
-        _lhs * self;
-    } 
-}
-
-impl ops::MulAssign<f64> for Vec3 {
-    type Output = Self;
-
-    fn mul_assign(&mut self, _rhs: f64){
-        self = self * _rhs;
     }
 }
 
+impl MulAssign<f64> for Vec3 {
+    fn mul_assign(&mut self, _rhs: f64) {
+        *self = Self {
+            x: self.x * _rhs,
+            y: self.y * _rhs,
+            z: self.z * _rhs,
+        };
+    }
+}
+
+impl Display for Vec3 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "({}, {}, {})", self.x, self.y, self.z)
+    }
+}
