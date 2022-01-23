@@ -1,7 +1,7 @@
 use core::fmt::{Display, Formatter, Result};
-use core::ops::{Add, AddAssign, Mul, MulAssign};
+use core::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -21,8 +21,24 @@ impl Vec3 {
         return self.z;
     }
 
-    fn length(&self) -> f64 {
+    pub fn length(&self) -> f64 {
         return (self.x * self.x + self.y * self.y + self.z * self.z).sqrt();
+    }
+
+    pub fn dot(&self, _rhs: Vec3) -> f64 {
+        return self.x * _rhs.x + self.y * _rhs.y + self.z * _rhs.z;
+    }
+
+    pub fn cross(&self, _rhs: Vec3) -> Self {
+        return Self {
+            x: self.y * _rhs.z - self.z * _rhs.y,
+            y: self.z * _rhs.x - self.x * _rhs.z,
+            z: self.x * _rhs.y - self.y * _rhs.x,
+        };
+    }
+
+    pub fn unit(&self) -> Self {
+        return *self / self.length();
     }
 }
 
@@ -45,6 +61,30 @@ impl AddAssign for Vec3 {
             y: self.y + _rhs.y,
             z: self.z + _rhs.z,
         };
+    }
+}
+
+impl Display for Vec3 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "({}, {}, {})", self.x, self.y, self.z)
+    }
+}
+
+impl Div<f64> for Vec3 {
+    type Output = Self;
+
+    fn div(self, _rhs: f64) -> Self {
+        Self {
+            x: self.x / _rhs,
+            y: self.y / _rhs,
+            z: self.z / _rhs,
+        }
+    }
+}
+
+impl DivAssign<f64> for Vec3 {
+    fn div_assign(&mut self, _rhs: f64) {
+        *self *= 1.0 / _rhs
     }
 }
 
@@ -72,6 +112,18 @@ impl Mul<f64> for Vec3 {
     }
 }
 
+impl Mul<Vec3> for f64 {
+    type Output = Vec3;
+
+    fn mul(self, _rhs: Vec3) -> Vec3 {
+        Vec3 {
+            x: self * _rhs.x,
+            y: self * _rhs.y,
+            z: self * _rhs.z,
+        }
+    }
+}
+
 impl MulAssign<f64> for Vec3 {
     fn mul_assign(&mut self, _rhs: f64) {
         *self = Self {
@@ -82,8 +134,47 @@ impl MulAssign<f64> for Vec3 {
     }
 }
 
-impl Display for Vec3 {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({}, {}, {})", self.x, self.y, self.z)
+impl Neg for Vec3 {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Self {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
     }
 }
+
+impl Sub for Vec3 {
+    type Output = Self;
+
+    fn sub(self, _rhs: Self) -> Self {
+        Self {
+            x: self.x - _rhs.x,
+            y: self.y - _rhs.y,
+            z: self.z - _rhs.z,
+        }
+    }
+}
+
+impl SubAssign for Vec3 {
+    fn sub_assign(&mut self, _rhs: Self) {
+        *self = Self {
+            x: self.x - _rhs.x,
+            y: self.y - _rhs.y,
+            z: self.z - _rhs.z,
+        };
+    }
+}
+
+pub fn write_as_color(color: Color) {
+    let ir = (255.999 * color.x) as i32;
+    let ig = (255.999 * color.y) as i32;
+    let ib = (255.999 * color.z) as i32;
+
+    println!("{} {} {}\n", ir, ig, ib);
+}
+
+pub type Point3 = Vec3;
+pub type Color = Vec3;

@@ -1,47 +1,61 @@
 pub mod Vec3;
+pub mod ray;
 
 fn main() {
-    let image_width = 256;
-    let image_height = 256;
-    /*
-    println!("P3\n {} {}\n255\n", image_width, image_height);
+    //Image
+    let aspect_ratio = 16.0 / 9.0;
+    let image_width = 400;
+    let image_height = (image_width as f64 / aspect_ratio) as i32;
 
-    for y in (0..image_height - 1).rev() {
-        eprintln!("\rScanlines remaining: {}", y);
-        for x in 0..image_width {
-            let r = x as f64 / (image_width - 1) as f64;
-            let g = y as f64 / (image_height - 1) as f64;
-            let b = 0.25;
+    //Camera
+    let viewport_height = 2.0;
+    let viewport_width = aspect_ratio * viewport_height;
+    let focal_length = 1.0;
 
-            let ir = (255.999 * r) as i32;
-            let ig = (255.999 * g) as i32;
-            let ib = (255.999 * b) as i32;
-
-            println!("{} {} {}\n", ir, ig, ib);
-        }
-    }
-    eprintln!("\nDone.\n"); */
-
-    let mut vec3 = Vec3::Vec3 {
-        x: 1.0,
-        y: 2.0,
-        z: 3.0,
+    let origin = Vec3::Point3 {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+    };
+    let horizontal = Vec3::Vec3 {
+        x: viewport_width,
+        y: 0.0,
+        z: 0.0,
+    };
+    let vertical = Vec3::Vec3 {
+        x: 0.0,
+        y: viewport_height,
+        z: 0.0,
     };
 
-    vec3 *= 3.14;
-    assert_eq!(
-        Vec3::Vec3 {
-            x: 3.14,
-            y: 6.28,
-            z: 9.42
-        },
-        vec3,
-        "Checking that {} and {} are equal.",
-        Vec3::Vec3 {
-            x: 3.14,
-            y: 6.28,
-            z: 9.41
-        },
-        vec3,
-    );
+    let lower_left_corner = origin
+        - horizontal / 2.0
+        - vertical / 2.0
+        - Vec3::Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: focal_length,
+        };
+
+    //Render
+
+    println!("P3\n {} {}\n255\n", image_width, image_height);
+
+    for j in (0..image_height).rev() {
+        eprintln!("\rScanlines remaining: {}", j);
+        for i in 0..image_width {
+            let u = i as f64 / (image_width as f64 - 1.0);
+            let v = j as f64 / (image_height as f64 - 1.0);
+
+            let r = ray::Ray {
+                origin: origin,
+                direction: lower_left_corner + u * horizontal + v * vertical - origin,
+            };
+
+            let color = ray::Ray::ray_color(&r);
+
+            Vec3::write_as_color(color);
+        }
+    }
+    eprintln!("\nDone.\n");
 }
