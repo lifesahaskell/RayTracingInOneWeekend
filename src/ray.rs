@@ -36,7 +36,7 @@ impl Ray {
         );
 
         if t > 0.0 {
-            let N = (self.at(t)
+            let normal = (self.at(t)
                 - Vec3 {
                     x: 0.0,
                     y: 0.0,
@@ -46,9 +46,9 @@ impl Ray {
 
             return 0.5
                 * Color {
-                    x: N.x + 1.0,
-                    y: N.y + 1.0,
-                    z: N.z + 1.0,
+                    x: normal.x + 1.0,
+                    y: normal.y + 1.0,
+                    z: normal.z + 1.0,
                 };
         }
 
